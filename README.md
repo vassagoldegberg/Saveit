@@ -103,7 +103,7 @@ This project is licensed under the MIT License.
 
 For any issues or suggestions, contact:
 
-* [Telegram](https://t.me/DevURANIUM)
+* [Email](info@heydari.org)
 * [GitHub Issues](https://github.com/DevURANIUM/Saveit/issues)
 
 ## Donation Links
