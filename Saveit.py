@@ -59,13 +59,12 @@ async def download(event):
         await inpv.edit(f"Failed to download file: {str(err)}")
         return
 
-    # ارسال به Saved Messages به صورت فایل
     try:
         await event.client.send_file(
             saved_messages_chat_id, 
             file_path, 
             caption=f"File saved from {sssender}",
-            force_document=True  # مهم: فایل بدون فشرده شدن ارسال شود
+            force_document=True
         )
     except Exception as err:
         await inpv.edit(f"Failed to send file to Saved Messages: {str(err)}")
@@ -83,3 +82,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
