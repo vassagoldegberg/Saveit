@@ -3,13 +3,10 @@ import asyncio
 from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 
-# === Переменные окружения ===
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 STRING_SESSION = os.environ.get("STRING_SESSION")
-HANDLER = os.environ.get("HANDLER", ".saveit")
 
-# === Создаём клиент через STRING_SESSION ===
 client = TelegramClient(
     StringSession(STRING_SESSION),
     API_ID,
@@ -17,31 +14,36 @@ client = TelegramClient(
 )
 
 
-@client.on(events.NewMessage(pattern=f"^{HANDLER}$"))
-async def handler(event):
-    if not event.is_reply:
-        await event.reply("Ответь на сообщение с медиа.")
+@client.on(events.NewMessage(incoming=True))
+async def auto_save(event):
+    # Берём информацию о чате
+    chat = await event.get_chat()
+
+    # ✅ Оставляем только личные диалоги (не группы и не каналы)
+    if not event.is_private:
         return
 
-    reply = await event.get_reply_message()
+    # Игнорируем свои сообщения
+    me = await client.get_me()
+    if event.sender_id == me.id:
+        return
 
-    if not reply.media:
-        await event.reply("В этом сообщении нет медиа.")
+    # Если нет медиа — игнорируем
+    if not event.media:
         return
 
     try:
-        file = await reply.download_media()
+        file = await event.download_media()
         await client.send_file("me", file)
-        await event.reply("Сохранено в Избранное ✅")
         os.remove(file)
-    except Exception as e:
-        await event.reply(f"Ошибка: {e}")
+    except Exception:
+        pass
 
 
 async def main():
-    print("Saveit запущен...")
+    print("AutoSave (только личные чаты) запущен...")
     await client.start()
-    print("Успешно подключено к Telegram ✅")
+    print("Сохранение активно ✅")
     await client.run_until_disconnected()
 
 
